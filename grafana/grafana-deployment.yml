@@ -23,8 +23,24 @@ spec:
           ports:
             - containerPort: 3000
           volumeMounts:
-          - name: grafana-persistent-storage
+          - name: grafana-vol
             mountPath: /var
       volumes:
-      - name: grafana-persistent-storage
-        emptyDir: {}
+      - name: grafana-vol
+        persistentVolumeClaim:
+          claimName: grafana-pvc
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: grafana-persistent-storage
